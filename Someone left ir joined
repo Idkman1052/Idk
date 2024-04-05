@@ -1,0 +1,57 @@
+-- Place this script in ServerScriptService
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+-- Create the frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 316, 0, 370)
+frame.Position = UDim2.new(0, 163, 0, 308)
+frame.BackgroundTransparency = 0.5
+frame.BackgroundColor3 = Color3.new(0, 0, 0)
+frame.BorderSizePixel = 0
+
+-- Create the text labels
+local joinLabel = Instance.new("TextLabel")
+joinLabel.Text = ""
+joinLabel.Size = UDim2.new(1, 0, 0.5, 0)
+joinLabel.Position = UDim2.new(0, 0, 0, 0)
+joinLabel.TextColor3 = Color3.new(1, 1, 1)
+joinLabel.BackgroundTransparency = 1
+joinLabel.Font = Enum.Font.SourceSans
+joinLabel.TextSize = 24
+joinLabel.Parent = frame
+
+local leaveLabel = Instance.new("TextLabel")
+leaveLabel.Text = ""
+leaveLabel.Size = UDim2.new(1, 0, 0.5, 0)
+leaveLabel.Position = UDim2.new(0, 0, 0.5, 0)
+leaveLabel.TextColor3 = Color3.new(1, 1, 1)
+leaveLabel.BackgroundTransparency = 1
+leaveLabel.Font = Enum.Font.SourceSans
+leaveLabel.TextSize = 24
+leaveLabel.Parent = frame
+
+-- Function to update labels
+local function updateLabels()
+    joinLabel.Text = "Joined: " .. tostring(Players.NumPlayers)
+    leaveLabel.Text = "Left: " .. tostring(Players.MaxPlayers - Players.NumPlayers)
+end
+
+-- Update labels when players join or leave
+Players.PlayerAdded:Connect(updateLabels)
+Players.PlayerRemoving:Connect(updateLabels)
+
+-- Clone the frame to each player's screen
+local function cloneFrame(player)
+    local clonedFrame = frame:Clone()
+    clonedFrame.Parent = player:WaitForChild("PlayerGui")
+end
+
+-- Clone the frame for existing players
+for _, player in ipairs(Players:GetPlayers()) do
+    cloneFrame(player)
+end
+
+-- Clone the frame for new players
+Players.PlayerAdded:Connect(cloneFrame)
