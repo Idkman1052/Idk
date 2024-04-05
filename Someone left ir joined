@@ -5,7 +5,8 @@ gui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(0.3, 0, 0.1, 0)
-frame.Position = UDim2.new(0.35, 0, 0.85, 0) -- Positioned slightly higher in the middle bottom
+frame.Position = UDim2.new(0.35, 0, 0.5, 0) -- Positioned in the middle bottom
+frame.AnchorPoint = Vector2.new(0.5, 0.5) -- Set anchor point to center
 frame.BackgroundColor3 = Color3.new(0, 0, 0)
 frame.BorderSizePixel = 2
 frame.Visible = false
