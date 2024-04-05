@@ -1,35 +1,39 @@
--- Create a ScreenGui to hold the notification
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "NotificationGui"
-screenGui.Parent = game.Players.LocalPlayer.PlayerGui
+-- Define GUI properties
+local gui = Instance.new("ScreenGui")
+gui.Name = "PlayerNotificationGUI"
+gui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
--- Create a TextLabel to display the notification
-local notificationLabel = Instance.new("TextLabel")
-notificationLabel.Size = UDim2.new(0, 200, 0, 50)
-notificationLabel.Position = UDim2.new(0.5, -100, 0.5, -25)
-notificationLabel.AnchorPoint = Vector2.new(0.5, 0.5)
-notificationLabel.BackgroundTransparency = 0.5
-notificationLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-notificationLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-notificationLabel.Font = Enum.Font.SourceSans
-notificationLabel.TextSize = 18
-notificationLabel.Visible = false
-notificationLabel.Parent = screenGui
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0.3, 0, 0.1, 0)
+frame.Position = UDim2.new(0.5, 0, 0.9, 0)
+frame.BackgroundColor3 = Color3.new(0, 0, 0)
+frame.BorderSizePixel = 2
+frame.Parent = gui
 
--- Function to show notification
-local function showNotification(message)
-    notificationLabel.Text = message
-    notificationLabel.Visible = true
-    wait(2)  -- Display notification for 2 seconds
-    notificationLabel.Visible = false
+local textLabel = Instance.new("TextLabel")
+textLabel.Size = UDim2.new(1, 0, 1, 0)
+textLabel.Text = ""
+textLabel.TextScaled = true
+textLabel.TextColor3 = Color3.new(1, 1, 1)
+textLabel.Parent = frame
+
+-- Function to update GUI text
+local function updateNotification(playerName, action)
+    textLabel.Text = playerName .. " has " .. action
+    wait(3)  -- Display the notification for 3 seconds
+    textLabel.Text = ""
 end
 
--- Connect the player joining event
-game.Players.PlayerAdded:Connect(function(player)
-    showNotification(player.Name .. " joined the game!")
-end)
+-- Function to handle player joining
+local function onPlayerAdded(player)
+    updateNotification(player.Name, "joined")
+end
 
--- Connect the player leaving event
-game.Players.PlayerRemoving:Connect(function(player)
-    showNotification(player.Name .. " left the game!")
-end)
+-- Function to handle player leaving
+local function onPlayerRemoving(player)
+    updateNotification(player.Name, "left")
+end
+
+-- Connect event handlers to player events
+game.Players.PlayerAdded:Connect(onPlayerAdded)
+game.Players.PlayerRemoving:Connect(onPlayerRemoving)
