@@ -5,9 +5,10 @@ gui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(0.3, 0, 0.1, 0)
-frame.Position = UDim2.new(0.5, 0, 0.9, 0)
+frame.Position = UDim2.new(0.35, 0, 0.85, 0) -- Positioned slightly higher in the middle bottom
 frame.BackgroundColor3 = Color3.new(0, 0, 0)
 frame.BorderSizePixel = 2
+frame.Visible = false
 frame.Parent = gui
 
 local textLabel = Instance.new("TextLabel")
@@ -20,8 +21,9 @@ textLabel.Parent = frame
 -- Function to update GUI text
 local function updateNotification(playerName, action)
     textLabel.Text = playerName .. " has " .. action
+    frame.Visible = true
     wait(3)  -- Display the notification for 3 seconds
-    textLabel.Text = ""
+    frame.Visible = false
 end
 
 -- Function to handle player joining
