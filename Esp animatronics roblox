@@ -3,6 +3,11 @@
 local player = game.Players.LocalPlayer
 local guiEnabled = false
 
+local gameName = game.Name
+if gameName ~= "fnaf 1 but security breach" then
+    return  -- Exit the script if the game name doesn't match
+end
+
 local function createESP(object)
     local BillboardGui = Instance.new("BillboardGui")
     BillboardGui.Adornee = object
