@@ -1,0 +1,91 @@
+-- Inside a LocalScript (e.g., placed in StarterPlayer -> StarterPlayerScripts)
+
+local player = game.Players.LocalPlayer
+local guiEnabled = false
+
+local function createESP(object)
+    local BillboardGui = Instance.new("BillboardGui")
+    BillboardGui.Adornee = object
+    BillboardGui.Size = UDim2.new(0, 100, 0, 40)
+    BillboardGui.StudsOffset = Vector3.new(0, 1, 0)  -- Adjust the Y value to position it inside the torso
+    BillboardGui.AlwaysOnTop = true
+    BillboardGui.LightInfluence = 1
+    BillboardGui.ExtentsOffsetWorldSpace = Vector3.new(0, 1, 0)
+    BillboardGui.Parent = player.PlayerGui
+
+    local TextLabel = Instance.new("TextLabel")
+    TextLabel.Text = object.Name
+    TextLabel.Size = UDim2.new(1, 0, 1, 0)
+    TextLabel.TextColor3 = Color3.new(1, 0, 0) -- Red color
+    TextLabel.BackgroundTransparency = 1
+    TextLabel.Position = UDim2.new(0, 0, 0.8, 0) -- Adjust the Y position to make it lower
+    TextLabel.TextSize = 20
+    TextLabel.Parent = BillboardGui
+end
+
+local function espAnimatronics()
+    local animatronicsFolder = game:GetService("Workspace").Animatronics
+
+    for _, object in pairs(animatronicsFolder:GetChildren()) do
+        createESP(object)
+    end
+end
+
+local function toggleESP()
+    guiEnabled = not guiEnabled
+
+    if guiEnabled then
+        espAnimatronics()
+        -- Enable mobile movement controls
+        script.Parent = player:WaitForChild("PlayerGui")
+    else
+        for _, gui in pairs(player.PlayerGui:GetChildren()) do
+            if gui:IsA("BillboardGui") then
+                gui:Destroy()
+            end
+        end
+        -- Disable mobile movement controls
+        script.Parent = nil
+    end
+end
+
+-- Create ScreenGui, TextButton, and LocalScript for mobile movement
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local guiButton = Instance.new("TextButton")
+guiButton.Text = "ESP"
+guiButton.Size = UDim2.new(0, 100, 0, 40)
+guiButton.Position = UDim2.new(0, 10, 0, 10)
+guiButton.Parent = screenGui
+
+local moveScript = Instance.new("LocalScript")
+moveScript.Parent = guiButton
+
+guiButton.MouseButton1Click:Connect(toggleESP)
+
+-- Make the GUI draggable on mobile
+local UserInputService = game:GetService("UserInputService")
+
+local touchGui = nil
+local guiOffset = nil
+
+guiButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch then
+        touchGui = input.UserInputType
+        guiOffset = guiButton.Position - UDim2.new(0, input.Position.X, 0, input.Position.Y)
+    end
+end)
+
+guiButton.InputChanged:Connect(function(input)
+    if touchGui == Enum.UserInputType.Touch then
+        local newPosition = UDim2.new(0, input.Position.X, 0, input.Position.Y) + guiOffset
+        guiButton.Position = newPosition
+    end
+end)
+
+guiButton.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch then
+        touchGui = nil
+    end
+end)
