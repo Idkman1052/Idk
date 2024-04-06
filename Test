@@ -1,0 +1,54 @@
+-- Function to create ESP for a part
+local function createESP(part)
+    local billboard = Instance.new("BillboardGui")
+    billboard.AlwaysOnTop = true
+    billboard.Size = UDim2.new(2, 0, 2, 0)
+    billboard.Parent = game:GetService("CoreGui")
+    
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.TextScaled = true
+    textLabel.TextColor3 = Color3.new(1, 1, 1)
+    textLabel.TextStrokeTransparency = 0.5
+    textLabel.BackgroundTransparency = 1
+    textLabel.Text = part.Name
+    textLabel.Parent = billboard
+
+    -- Connect function to update the position of the billboard
+    local connection
+    connection = game:GetService("RunService").Heartbeat:Connect(function()
+        if part.Parent then
+            local screenPosition, onScreen = workspace.CurrentCamera:WorldToScreenPoint(part.Position)
+            if onScreen then
+                billboard.Adornee = nil
+                billboard.Size = UDim2.new(0, 200, 0, 50) -- Adjust size as needed
+                billboard.StudsOffset = Vector3.new(screenPosition.X, screenPosition.Y - 50, 0) -- Adjust offset as needed
+            else
+                billboard.Adornee = part
+            end
+        else
+            billboard:Destroy()
+            connection:Disconnect()
+        end
+    end)
+end
+
+-- Function to ESP all files in a folder
+local function espFolder(folder)
+    for _, file in ipairs(folder:GetChildren()) do
+        if file:IsA("Sound") or file:IsA("Folder") then
+            createESP(file)
+        end
+    end
+end
+
+-- Get the specified folder
+local entitiesFolder = game:GetService("Workspace").Sounds.Entities
+
+-- Check if the folder exists
+if entitiesFolder then
+    -- ESP all files in the folder
+    espFolder(entitiesFolder)
+else
+    warn("Entities folder not found.")
+end
