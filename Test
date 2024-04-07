@@ -1,28 +1,32 @@
--- Function to create a TextLabel for an object
-local function createTextLabel(object)
+-- Function to create ESP text label for a part
+local function createTextLabel(part)
     local textLabel = Instance.new("TextLabel")
-    textLabel.Text = object.Name
+    textLabel.Text = part.Name
     textLabel.Size = UDim2.new(0, 100, 0, 20)
-    textLabel.Position = UDim2.new(0, object.Position.X, 0, object.Position.Y + 50) -- Adjust Y position for better visibility
-    textLabel.TextScaled = true
-    textLabel.TextColor3 = Color3.new(1, 1, 1)
-    textLabel.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-    textLabel.BackgroundTransparency = 1 -- Make the background transparent
-    textLabel.ZIndex = 2 -- Ensure the TextLabel appears on top of other GUI elements
-    textLabel.AlwaysOnTop = true -- Ensure the TextLabel is always drawn on top of all parts
+    textLabel.Position = UDim2.new(0, 0, 0, 0)
+    textLabel.BackgroundColor3 = Color3.new(1, 1, 1)
+    textLabel.TextColor3 = Color3.new(1, 0, 0) -- Red color for better visibility
+    textLabel.BorderSizePixel = 0
+    textLabel.Font = Enum.Font.SourceSansBold
+    textLabel.TextSize = 14
+    textLabel.Parent = game.CoreGui
+    textLabel.AlwaysOnTop = true -- Text goes through walls
+    return textLabel
 end
 
--- Function to ESP all objects in Workspace
-local function ESPAllObjects()
-    local workspace = game:GetService("Workspace")
-    local objects = workspace:GetDescendants()
-
-    for _, object in pairs(objects) do
-        if object:IsA("BasePart") then
-            createTextLabel(object)
+-- Function to update ESP text labels
+local function updateESP()
+    for _, part in ipairs(game:GetService("Workspace").Seek:GetChildren()) do
+        if part:IsA("BasePart") then
+            local position = part.Position
+            local screenPosition = camera:WorldToViewportPoint(position)
+            if screenPosition.Z > 0 then -- Check if the part is in front of the camera
+                local textLabel = createTextLabel(part)
+                textLabel.Position = UDim2.new(0, screenPosition.X, 0, screenPosition.Y)
+            end
         end
     end
 end
 
--- Call the function to ESP all objects
-ESPAllObjects()
+-- Connect a function to the render step event
+game:GetService("RunService").RenderStepped:Connect(updateESP)
